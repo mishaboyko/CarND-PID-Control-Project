@@ -1,6 +1,8 @@
 #ifndef PID_H
 #define PID_H
 
+#include <limits>
+
 class PID {
  public:
   /**
@@ -15,9 +17,16 @@ class PID {
 
   /**
    * Initialize PID.
-   * @param (Kp_, Ki_, Kd_) The initial PID coefficients
+   * @param Kp_ Proportional coefficient
+   * @param Ki_ Integral coefficient
+   * @param Kd_ Differential coefficient
    */
   void Init(double Kp_, double Ki_, double Kd_);
+
+  /*
+   * Calculate steer angle based on the new CTE.
+   */
+  double CalculateSteerAngle(double cte_in);
 
   /**
    * Update the PID error variables given cross track error.
@@ -26,12 +35,14 @@ class PID {
   void UpdateError(double cte);
 
   /**
-   * Calculate the total PID error.
-   * @output The total PID error
+   * Calculate the total PID error (integral).
    */
-  double TotalError();
+  void TotalError(double cte);
 
  private:
+  double last_cte = std::numeric_limits<double>::max();
+  double diff_cte = 0;
+  double int_cte = 0;
   /**
    * PID Errors
    */
@@ -41,7 +52,7 @@ class PID {
 
   /**
    * PID Coefficients
-   */ 
+   */
   double Kp;
   double Ki;
   double Kd;
